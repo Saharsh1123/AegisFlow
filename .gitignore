@@ -91,8 +91,8 @@ Icon?
 # VS Code / editors
 # =========================
 .vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
+.vscode/settings.json
+.vscode/extensions.json
 
 .idea/
 *.swp
