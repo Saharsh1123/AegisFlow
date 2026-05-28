@@ -1,36 +1,22 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.events import EventRequest
-from uuid import uuid4
-
-fake_db = {}
+from app.services import event_service
 
 router = APIRouter()
 
 @router.post("/events", status_code=201)
 def create_event(payload: EventRequest):
-    new_id = str(uuid4())
-
-    created_event = {
-             "event_id": new_id, 
-             "status": "accepted",
-             "asset": payload.asset,
-             "event_type": payload.event_type,
-             "side": payload.side,
-             "quantity": payload.quantity,
-             "price": payload.price
-           }
-
-    fake_db[new_id] = created_event
-
-    return created_event
-
-@router.get("/events/{event_id}")
-def get_event(event_id: str):
-    if event_id in fake_db:
-        return fake_db[event_id]
-
-    raise HTTPException(status_code=404, detail="event not found")
+    return event_service.create_event(payload)
 
 @router.get("/events")
 def get_all_events():
-    return list(fake_db.values())
+    return event_service.get_all_events()
+
+@router.get("/events/{event_id}")
+def get_event(event_id: str):
+    retrieved_event = event_service.get_event(event_id)
+    if retrieved_event is None:
+        raise HTTPException(status_code=404, detail="event not found")
+    
+    return retrieved_event
+   

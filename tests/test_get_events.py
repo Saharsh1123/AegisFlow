@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from app.api.routes_events import fake_db
+from app.services.event_service import fake_db
 from app.main import app
 from tests.helpers import create_valid_event, get_valid_event
 
