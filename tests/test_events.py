@@ -1,4 +1,5 @@
 from uuid import UUID
+from tests.helpers import make_valid_payload
 
 import pytest
 from fastapi.testclient import TestClient
@@ -7,21 +8,6 @@ from app.main import app
 
 
 client = TestClient(app)
-
-
-def make_valid_payload(overrides=None):
-    payload = {
-        "event_type": "ORDER_SUBMITTED",
-        "asset": "AAPL",
-        "side": "BUY",
-        "quantity": 10,
-        "price": 192.5,
-    }
-
-    if overrides:
-        payload.update(overrides)
-
-    return payload
 
 
 def test_valid_event_payload_returns_created_event():
@@ -33,7 +19,7 @@ def test_valid_event_payload_returns_created_event():
     assert response.status_code == 201
 
     assert set(data.keys()) == {
-        "id",
+        "event_id",
         "status",
         "event_type",
         "asset",
@@ -42,8 +28,8 @@ def test_valid_event_payload_returns_created_event():
         "price",
     }
 
-    assert isinstance(data["id"], str)
-    UUID(data["id"])
+    assert isinstance(data["event_id"], str)
+    UUID(data["event_id"])
 
     assert data["status"] == "accepted"
     assert data["event_type"] == payload["event_type"]

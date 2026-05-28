@@ -3,7 +3,7 @@ from typing import Literal
 
 
 class EventRequest(BaseModel):
-    id: str | None=None
+    event_id: str | None=None
     event_type: str
     asset: str
     side: Literal["BUY", "SELL"]
