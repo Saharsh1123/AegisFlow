@@ -1,5 +1,6 @@
 from app.schemas.events import EventRequest
 from app.storage import event_store
+from datetime import datetime, timezone
 from uuid import uuid4
 
 
@@ -9,6 +10,7 @@ def create_event(payload: EventRequest):
     created_event = {
              "event_id": new_id, 
              "status": "accepted",
+             "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
              "asset": payload.asset,
              "event_type": payload.event_type,
              "side": payload.side,
