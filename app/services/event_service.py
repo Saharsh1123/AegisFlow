@@ -1,7 +1,7 @@
 from app.schemas.events import EventRequest
+from app.storage import event_store
 from uuid import uuid4
 
-fake_db = {}
 
 def create_event(payload: EventRequest):
     new_id = str(uuid4())
@@ -16,16 +16,13 @@ def create_event(payload: EventRequest):
              "price": payload.price
            }
 
-    fake_db[new_id] = created_event
+    event_store.save_event(new_id, created_event)
 
     return created_event
 
 
 def get_event(event_id: str):
-    if event_id in fake_db:
-        return fake_db[event_id]
-
-    return None
+    return event_store.get_event(event_id)
 
 def get_all_events():
-    return list(fake_db.values())
+    return event_store.get_all_events()
