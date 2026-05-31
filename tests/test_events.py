@@ -3,7 +3,7 @@ from uuid import UUID
 
 import pytest
 
-from tests.helpers import create_valid_event, make_valid_payload
+from tests.helpers import client, create_valid_event, make_valid_payload
 
 
 EXPECTED_EVENT_KEYS = {
@@ -35,7 +35,6 @@ def test_valid_event_payload_returns_created_event():
     data = response.json()
 
     assert response.status_code == 201
-
     assert set(data.keys()) == EXPECTED_EVENT_KEYS
 
     assert isinstance(data["event_id"], str)
@@ -127,8 +126,6 @@ def test_order_over_max_order_value_is_rejected():
 
 @pytest.mark.parametrize("invalid_side", ["HOLD", "buy", "sell", "", "INVALID"])
 def test_invalid_side_returns_422(invalid_side):
-    payload = make_valid_payload({"side": invalid_side})
-
     response = create_valid_event({"side": invalid_side})
 
     assert response.status_code == 422
@@ -156,8 +153,30 @@ def test_missing_required_field_returns_422(missing_field):
     payload = make_valid_payload()
     payload.pop(missing_field)
 
-    from tests.helpers import client
-
     response = client.post("/events", json=payload)
+
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    ("raw_asset", "expected_asset"),
+    [
+        ("aapl", "AAPL"),
+        ("AaPl", "AAPL"),
+        ("msft", "MSFT"),
+        ("GOOG", "GOOG"),
+    ],
+)
+def test_asset_is_normalized_to_uppercase(raw_asset, expected_asset):
+    response = create_valid_event({"asset": raw_asset})
+    data = response.json()
+
+    assert response.status_code == 201
+    assert data["asset"] == expected_asset
+
+
+@pytest.mark.parametrize("invalid_asset", ["", "   "])
+def test_blank_asset_returns_422(invalid_asset):
+    response = create_valid_event({"asset": invalid_asset})
 
     assert response.status_code == 422
