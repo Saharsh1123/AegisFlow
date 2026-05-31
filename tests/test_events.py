@@ -2,21 +2,23 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 import pytest
-from fastapi.testclient import TestClient
 
-from app.main import app
-from app.storage import event_store
-from tests.helpers import make_valid_payload
+from tests.helpers import create_valid_event, make_valid_payload
 
 
-client = TestClient(app)
-
-
-@pytest.fixture(autouse=True)
-def clear_fake_db():
-    event_store.clear_events()
-    yield
-    event_store.clear_events()
+EXPECTED_EVENT_KEYS = {
+    "event_id",
+    "status",
+    "risk_approved",
+    "risk_reason",
+    "order_value",
+    "created_at",
+    "event_type",
+    "asset",
+    "side",
+    "quantity",
+    "price",
+}
 
 
 def parse_created_at(timestamp: str) -> datetime:
@@ -29,21 +31,12 @@ def parse_created_at(timestamp: str) -> datetime:
 def test_valid_event_payload_returns_created_event():
     payload = make_valid_payload()
 
-    response = client.post("/events", json=payload)
+    response = create_valid_event()
     data = response.json()
 
     assert response.status_code == 201
 
-    assert set(data.keys()) == {
-        "event_id",
-        "status",
-        "created_at",
-        "event_type",
-        "asset",
-        "side",
-        "quantity",
-        "price",
-    }
+    assert set(data.keys()) == EXPECTED_EVENT_KEYS
 
     assert isinstance(data["event_id"], str)
     UUID(data["event_id"])
@@ -56,6 +49,10 @@ def test_valid_event_payload_returns_created_event():
     assert parsed_created_at.utcoffset() == timezone.utc.utcoffset(parsed_created_at)
 
     assert data["status"] == "accepted"
+    assert data["risk_approved"] is True
+    assert data["risk_reason"] is None
+    assert data["order_value"] == pytest.approx(payload["quantity"] * payload["price"])
+
     assert data["event_type"] == payload["event_type"]
     assert data["asset"] == payload["asset"]
     assert data["side"] == payload["side"]
@@ -64,8 +61,8 @@ def test_valid_event_payload_returns_created_event():
 
 
 def test_created_event_has_unique_event_id_each_time():
-    first_response = client.post("/events", json=make_valid_payload({"asset": "AAPL"}))
-    second_response = client.post("/events", json=make_valid_payload({"asset": "MSFT"}))
+    first_response = create_valid_event({"asset": "AAPL"})
+    second_response = create_valid_event({"asset": "MSFT"})
 
     first_data = first_response.json()
     second_data = second_response.json()
@@ -76,7 +73,7 @@ def test_created_event_has_unique_event_id_each_time():
 
 
 def test_created_event_has_created_at_each_time():
-    response = client.post("/events", json=make_valid_payload())
+    response = create_valid_event()
     data = response.json()
 
     assert response.status_code == 201
@@ -85,29 +82,68 @@ def test_created_event_has_created_at_each_time():
     assert data["created_at"] != ""
 
 
+def test_order_value_is_quantity_times_price():
+    payload = make_valid_payload({"quantity": 7, "price": 123.45})
+
+    response = create_valid_event({"quantity": 7, "price": 123.45})
+    data = response.json()
+
+    assert response.status_code == 201
+    assert data["order_value"] == pytest.approx(payload["quantity"] * payload["price"])
+
+
+def test_order_under_max_order_value_is_accepted():
+    response = create_valid_event({"quantity": 10, "price": 1000.0})
+    data = response.json()
+
+    assert response.status_code == 201
+    assert data["order_value"] == pytest.approx(10000.0)
+    assert data["status"] == "accepted"
+    assert data["risk_approved"] is True
+    assert data["risk_reason"] is None
+
+
+def test_order_equal_to_max_order_value_is_accepted():
+    response = create_valid_event({"quantity": 10, "price": 5000.0})
+    data = response.json()
+
+    assert response.status_code == 201
+    assert data["order_value"] == pytest.approx(50000.0)
+    assert data["status"] == "accepted"
+    assert data["risk_approved"] is True
+    assert data["risk_reason"] is None
+
+
+def test_order_over_max_order_value_is_rejected():
+    response = create_valid_event({"quantity": 11, "price": 5000.0})
+    data = response.json()
+
+    assert response.status_code == 201
+    assert data["order_value"] == pytest.approx(55000.0)
+    assert data["status"] == "rejected"
+    assert data["risk_approved"] is False
+    assert data["risk_reason"] == "MAX_ORDER_VALUE_EXCEEDED"
+
+
 @pytest.mark.parametrize("invalid_side", ["HOLD", "buy", "sell", "", "INVALID"])
 def test_invalid_side_returns_422(invalid_side):
     payload = make_valid_payload({"side": invalid_side})
 
-    response = client.post("/events", json=payload)
+    response = create_valid_event({"side": invalid_side})
 
     assert response.status_code == 422
 
 
 @pytest.mark.parametrize("invalid_quantity", [0, -1, -100])
 def test_invalid_quantity_returns_422(invalid_quantity):
-    payload = make_valid_payload({"quantity": invalid_quantity})
-
-    response = client.post("/events", json=payload)
+    response = create_valid_event({"quantity": invalid_quantity})
 
     assert response.status_code == 422
 
 
 @pytest.mark.parametrize("invalid_price", [0, -1, -192.5])
 def test_invalid_price_returns_422(invalid_price):
-    payload = make_valid_payload({"price": invalid_price})
-
-    response = client.post("/events", json=payload)
+    response = create_valid_event({"price": invalid_price})
 
     assert response.status_code == 422
 
@@ -119,6 +155,8 @@ def test_invalid_price_returns_422(invalid_price):
 def test_missing_required_field_returns_422(missing_field):
     payload = make_valid_payload()
     payload.pop(missing_field)
+
+    from tests.helpers import client
 
     response = client.post("/events", json=payload)
 

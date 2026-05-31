@@ -1,7 +1,10 @@
-from app.main import app
 from fastapi.testclient import TestClient
 
+from app.main import app
+
+
 client = TestClient(app)
+
 
 def make_valid_payload(overrides=None):
     payload = {
@@ -17,9 +20,15 @@ def make_valid_payload(overrides=None):
 
     return payload
 
+
 def create_valid_event(overrides=None):
     payload = make_valid_payload(overrides)
     return client.post("/events", json=payload)
 
-def get_valid_event(event_id):
+
+def get_valid_event(event_id: str):
     return client.get(f"/events/{event_id}")
+
+
+def get_all_events():
+    return client.get("/events")

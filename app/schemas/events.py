@@ -15,6 +15,9 @@ class EventResponse(BaseModel):
     event_id: str
     status: str
     created_at: str
+    risk_approved: bool
+    risk_reason: str | None
+    order_value: float = Field(gt=0)
     event_type: str
     asset: str
     side: Literal["BUY", "SELL"]
