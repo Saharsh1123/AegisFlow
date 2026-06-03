@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class EventRequest(BaseModel):
-    event_type: str
+    event_type: Literal["ORDER_SUBMITTED", "ORDER_CANCELLED", "ORDER_FILLED", "RISK_CHECK_REQUESTED"]
     asset: str
     side: Literal["BUY", "SELL"]
     quantity: int = Field(gt=0)
@@ -34,7 +34,7 @@ class EventResponse(BaseModel):
     risk_approved: bool
     risk_reason: str | None
     order_value: float = Field(gt=0)
-    event_type: str
+    event_type: Literal["ORDER_SUBMITTED", "ORDER_CANCELLED", "ORDER_FILLED", "RISK_CHECK_REQUESTED"]
     asset: str
     side: Literal["BUY", "SELL"]
     quantity: int = Field(gt=0)

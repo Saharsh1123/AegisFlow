@@ -203,3 +203,14 @@ def test_asset_equal_to_max_length_is_allowed():
     assert data["asset"] == "A" * 30
 
 
+@pytest.mark.parametrize("invalid_event_type", ["jioewfe", "ORDER_cANCELLED", "order_submitted", "buyordeethings", "", "INVALID"])
+def test_invalid_event_type_returns_422(invalid_event_type):
+    response = create_valid_event({"event_type": invalid_event_type})
+
+    assert response.status_code == 422
+
+@pytest.mark.parametrize("valid_event_type", ["ORDER_SUBMITTED", "ORDER_CANCELLED", "ORDER_FILLED", "RISK_CHECK_REQUESTED"])
+def test_valid_event_type_returns_201(valid_event_type):
+    response = create_valid_event({"event_type": valid_event_type})
+
+    assert response.status_code == 201
