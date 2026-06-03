@@ -10,13 +10,19 @@ class EventRequest(BaseModel):
     quantity: int = Field(gt=0)
     price: float = Field(gt=0)
 
+
     @field_validator("asset")
     @classmethod
     def normalize_asset(cls, value: str) -> str:
+        MAX_ASSET_LENGTH = 30
+
         cleaned = value.strip()
 
         if not cleaned:
             raise ValueError("No asset specified")
+
+        if len(cleaned) > MAX_ASSET_LENGTH:
+            raise ValueError("Asset symbol too long")
 
         return cleaned.upper()
 

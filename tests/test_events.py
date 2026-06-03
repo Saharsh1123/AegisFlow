@@ -180,3 +180,26 @@ def test_blank_asset_returns_422(invalid_asset):
     response = create_valid_event({"asset": invalid_asset})
 
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "invalid_asset",
+    [
+        "A" * 31,
+        "LONGASSETTICKERSYMBOLSAAAAAAAAAA",
+    ],
+)
+def test_asset_longer_than_max_length_returns_422(invalid_asset):
+    response = create_valid_event({"asset": invalid_asset})
+
+    assert response.status_code == 422
+
+
+def test_asset_equal_to_max_length_is_allowed():
+    response = create_valid_event({"asset": "A" * 30})
+    data = response.json()
+
+    assert response.status_code == 201
+    assert data["asset"] == "A" * 30
+
+
