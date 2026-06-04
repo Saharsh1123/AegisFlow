@@ -1,5 +1,5 @@
 import pytest
-
+from uuid import UUID
 from tests.helpers import create_valid_event, get_all_events, get_valid_event
 
 
@@ -12,7 +12,7 @@ def test_get_valid_event_payload_is_successful():
     retrieved_data = get_event_response.json()
 
     assert get_event_response.status_code == 200
-    assert retrieved_data["event_id"] == event_id
+    assert UUID(retrieved_data["event_id"]) == UUID(event_id)
 
 
 def test_get_valid_event_returns_same_event_data():
@@ -43,7 +43,7 @@ def test_get_rejected_event_returns_same_rejected_event_data():
 
 
 def test_get_missing_event_returns_404():
-    response = get_valid_event("fake-event-id")
+    response = get_valid_event("00000000-0000-0000-0000-000000000000")
 
     assert response.status_code == 404
     assert response.json()["detail"] == "event not found"
@@ -116,8 +116,15 @@ def test_created_event_id_can_be_used_to_retrieve_event():
     assert data == posted_data
 
 
-@pytest.mark.parametrize("event_id", ["not-a-real-id", "123"])
-def test_invalid_or_unknown_event_ids_return_404(event_id):
+@pytest.mark.parametrize(
+    "event_id", 
+    [
+        "00000000-0000-0000-0000-000000000000", 
+        "11111111-1111-1111-1111-111111111111",
+    ]
+)
+def test_unknown_valid_uuid_event_ids_return_404(event_id):
     response = get_valid_event(event_id)
 
     assert response.status_code == 404
+    assert response.json()["detail"] == "event not found"

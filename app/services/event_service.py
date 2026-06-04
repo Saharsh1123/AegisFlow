@@ -6,7 +6,7 @@ from uuid import uuid4
 
 
 def create_event(payload: EventRequest):
-    new_id = str(uuid4())
+    new_id = uuid4()
     price = payload.price
     quantity = payload.quantity
     order_value = price * quantity
@@ -30,7 +30,7 @@ def create_event(payload: EventRequest):
             "price": price
            }
 
-    event_store.save_event(new_id, created_event)
+    event_store.save_event(created_event)
 
     return created_event
 

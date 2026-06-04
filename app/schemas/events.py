@@ -1,5 +1,5 @@
 from typing import Literal
-
+from uuid import UUID
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -28,7 +28,7 @@ class EventRequest(BaseModel):
 
 
 class EventResponse(BaseModel):
-    event_id: str
+    event_id: UUID
     status: str
     created_at: str
     risk_approved: bool
