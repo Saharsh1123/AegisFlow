@@ -53,18 +53,30 @@ class Event(Base):
     )
 
     risk_approved: Mapped[bool] = mapped_column(nullable=False)
-
     risk_reason: Mapped[str | None] = mapped_column(nullable=True)
-
     order_value: Mapped[Decimal] = mapped_column(Numeric(18, 6), nullable=False)
-
     event_type: Mapped[str] = mapped_column(nullable=False)
-
     asset: Mapped[str] = mapped_column(nullable=False)
-
     side: Mapped[str] = mapped_column(nullable=False)
-
     quantity: Mapped[int] = mapped_column(nullable=False)
-
     price: Mapped[Decimal] = mapped_column(Numeric(18, 6), nullable=False)
+
+
+class Tenant(Base):
+    __tablename__ = "tenants"
+
+    __table_args__ = (
+        CheckConstraint(
+            "char_length(tenant_name) BETWEEN 1 AND 100", 
+            name="ck_tenants_tenant_name_length_valid"
+        ),
+    )
+
+    tenant_id: Mapped[UUID] = mapped_column(primary_key=True, nullable=False)
+    tenant_name: Mapped[str] = mapped_column(nullable=False, unique=True)
+    active: Mapped[bool] = mapped_column(nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+    )
 
