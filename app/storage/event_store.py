@@ -27,6 +27,8 @@ def save_event(event: dict):
         db.commit()
         db.refresh(db_event)
 
+        return event_to_dict(db_event)
+
     finally:
         db.close()
 

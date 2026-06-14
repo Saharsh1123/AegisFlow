@@ -21,6 +21,8 @@ def save_tenant(tenant: dict):
         db.commit()
         db.refresh(db_tenant)
 
+        return tenant_to_dict(db_tenant)
+    
     finally:
         db.close()
 
