@@ -22,7 +22,7 @@ def create_event(payload: EventRequest):
             "risk_approved": approved,
             "risk_reason": reason,
             "order_value": order_value,
-            "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "created_at": datetime.now(timezone.utc),
             "asset": payload.asset,
             "event_type": payload.event_type,
             "side": payload.side,
