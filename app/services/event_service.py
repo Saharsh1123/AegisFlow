@@ -40,3 +40,6 @@ def get_event(event_id: str):
 
 def get_all_events():
     return event_store.get_all_events()
+
+def clear_events():
+    event_store.clear_events()
