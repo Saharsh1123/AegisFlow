@@ -2,15 +2,19 @@ from fastapi import APIRouter, HTTPException
 from app.schemas.events import EventRequest, EventResponse
 from app.services import event_service
 
+
 router = APIRouter()
+
 
 @router.post("/events", status_code=201, response_model=EventResponse)
 def create_event(payload: EventRequest):
     return event_service.create_event(payload)
 
+
 @router.get("/events", response_model=list[EventResponse])
 def get_all_events():
     return event_service.get_all_events()
+
 
 @router.get("/events/{event_id}", response_model=EventResponse)
 def get_event(event_id: str):
@@ -20,3 +24,7 @@ def get_event(event_id: str):
     
     return retrieved_event
    
+
+@router.delete("/tenants/delete_all", response_model=EventResponse)
+def delete_all_tenants():
+    event_service.clear_events()
