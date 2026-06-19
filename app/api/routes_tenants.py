@@ -4,7 +4,7 @@ from app.services import tenant_service
 from uuid import UUID
 
 
-router = APIRouter()
+tenant_router = APIRouter()
 
 
 @router.post("/tenants", status_code=201, response_model=TenantResponse)

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.api.routes_events import router
+from app.api.routes_tenants import tenant_router
 
 app = FastAPI()
 
@@ -10,3 +11,4 @@ def health():
            }
 
 app.include_router(router)
+app.include_router(tenant_router)
