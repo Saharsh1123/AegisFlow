@@ -21,7 +21,7 @@ AegisFlow is a FastAPI backend for ingesting, validating, persisting, and risk-c
 - Database-level check constraints for core data integrity rules
 - Risk evaluation based on computed order value
 - Rejected events persisted for auditability
-- 50+ pytest tests covering API behavior, validation, risk decisions, UUID handling, timestamp formatting, and database-backed isolation
+- Purpose-driven pytest coverage for API behavior, validation, risk decisions, persistence, database constraints, and test isolation
 
 ## Current API
 
@@ -92,7 +92,8 @@ Returns all persisted events.
 ```text
 app/
   api/
-    routes/
+    routes_events.py
+    routes_tenants.py
   db/
     models.py
     session.py
@@ -181,13 +182,13 @@ http://127.0.0.1:8000/docs
 pytest
 ```
 
-The test suite covers endpoint behavior, validation errors, UUID handling, timestamp formatting, risk approval/rejection logic, and database-backed test isolation.
+The suite covers API contracts, validation boundaries, risk branches, persistence, tenant behavior, and database constraints. Tests use an isolated in-memory database and never modify the PostgreSQL database configured in `.env`. See [`docs/testing.md`](docs/testing.md) for the test strategy and documented expected failures.
 
 ## Roadmap
 
 Planned improvements include:
 
-- Tenant model and tenant-scoped event ownership
+- Mount tenant routes and add tenant-scoped event ownership
 - API-key authentication with hashed key storage
 - Explicit permission scopes such as `events:read` and `events:write`
 - Tenant-isolated event retrieval

@@ -1,12 +1,9 @@
-from fastapi.testclient import TestClient
+"""Health endpoint contract tests."""
 
-from app.main import app
-
-
-client = TestClient(app)
+from tests.helpers import client
 
 
-def test_health_route_returns_ok():
+def test_health_route_returns_exact_ok_contract():
     response = client.get("/health")
 
     assert response.status_code == 200

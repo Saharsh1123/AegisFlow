@@ -1,0 +1,105 @@
+"""Strict expected-failure tests for known unfinished integration behavior.
+
+These tests describe the intended public contract without changing application
+logic. Because ``strict=True`` is used, pytest will fail with XPASS when a gap is
+fixed, forcing the test to be promoted to the normal suite.
+"""
+
+import pytest
+
+from tests.helpers import (
+    client,
+    client_without_server_exceptions,
+    create_tenant,
+    tenant_client_without_server_exceptions,
+)
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="EventResponse.created_at expects str while the service returns datetime.",
+)
+def test_create_event_endpoint_returns_201():
+    response = client_without_server_exceptions.post(
+        "/events",
+        json={
+            "event_type": "ORDER_SUBMITTED",
+            "asset": "AAPL",
+            "side": "BUY",
+            "quantity": 1,
+            "price": 100.0,
+        },
+    )
+
+    assert response.status_code == 201
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="Event path IDs are untyped strings, so malformed UUIDs reach storage.",
+)
+def test_malformed_event_id_returns_422():
+    response = client_without_server_exceptions.get("/events/not-a-uuid")
+
+    assert response.status_code == 422
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="Duplicate tenant names currently surface as an unhandled DB error.",
+)
+def test_duplicate_tenant_name_returns_409():
+    create_tenant({"tenant_name": "Acme Capital"})
+
+    response = tenant_client_without_server_exceptions.post(
+        "/tenants",
+        json={"tenant_name": "Acme Capital"},
+    )
+
+    assert response.status_code == 409
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="Tenant name length is enforced only by the DB and is not mapped to 422.",
+)
+def test_overlong_tenant_name_returns_422():
+    response = tenant_client_without_server_exceptions.post(
+        "/tenants",
+        json={"tenant_name": "T" * 101},
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "The tenant delete-all route is shadowed by /tenants/{tenant_id} and "
+        "declares a response body it does not return."
+    ),
+)
+def test_delete_all_tenants_endpoint_returns_204():
+    create_tenant()
+
+    response = tenant_client_without_server_exceptions.delete("/tenants/delete_all")
+
+    assert response.status_code == 204
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "The event clear route is exposed at /tenants/delete_all and declares an "
+        "EventResponse body it does not return."
+    ),
+)
+def test_delete_all_events_endpoint_returns_204():
+    # Seed storage directly because the POST /events response contract is unfinished.
+    from tests.helpers import create_event_record
+
+    create_event_record()
+
+    response = client_without_server_exceptions.delete("/tenants/delete_all")
+
+    assert response.status_code == 204
