@@ -2,12 +2,10 @@
 
 from datetime import datetime, timezone
 from uuid import UUID
-
-import pytest
-
 from app.schemas.tenants import TenantCreateRequest
 from app.services import tenant_service
 from tests.helpers import (
+    client, 
     create_tenant,
     get_tenant,
     list_tenants,
@@ -27,6 +25,12 @@ def parse_timestamp(timestamp: str) -> datetime:
     """Parse FastAPI's ISO-8601 timestamp representation."""
 
     return datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+
+
+def test_main_application_mounts_tenant_routes():
+    response = client.post("/tenants", json={"tenant_name": "Acme Capital"})
+
+    assert response.status_code == 201
 
 
 def test_create_tenant_returns_normalized_active_tenant():

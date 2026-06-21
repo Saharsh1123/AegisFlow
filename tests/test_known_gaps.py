@@ -34,6 +34,7 @@ def test_create_event_endpoint_returns_201():
     assert response.status_code == 201
 
 
+
 @pytest.mark.xfail(
     strict=True,
     reason="Event path IDs are untyped strings, so malformed UUIDs reach storage.",

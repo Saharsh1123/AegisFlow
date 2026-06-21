@@ -7,7 +7,7 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.api.routes_tenants import router as tenant_router
+from app.api.routes_tenants import tenant_router
 from app.main import app
 from app.schemas.events import EventRequest
 from app.services import event_service
