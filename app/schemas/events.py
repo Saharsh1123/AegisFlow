@@ -1,5 +1,6 @@
 from typing import Literal
 from uuid import UUID
+from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -30,7 +31,7 @@ class EventRequest(BaseModel):
 class EventResponse(BaseModel):
     event_id: UUID
     status: str
-    created_at: str
+    created_at: datetime
     risk_approved: bool
     risk_reason: str | None
     order_value: float = Field(gt=0)

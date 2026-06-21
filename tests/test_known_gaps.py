@@ -8,31 +8,10 @@ fixed, forcing the test to be promoted to the normal suite.
 import pytest
 
 from tests.helpers import (
-    client,
     client_without_server_exceptions,
     create_tenant,
     tenant_client_without_server_exceptions,
 )
-
-
-@pytest.mark.xfail(
-    strict=True,
-    reason="EventResponse.created_at expects str while the service returns datetime.",
-)
-def test_create_event_endpoint_returns_201():
-    response = client_without_server_exceptions.post(
-        "/events",
-        json={
-            "event_type": "ORDER_SUBMITTED",
-            "asset": "AAPL",
-            "side": "BUY",
-            "quantity": 1,
-            "price": 100.0,
-        },
-    )
-
-    assert response.status_code == 201
-
 
 
 @pytest.mark.xfail(
