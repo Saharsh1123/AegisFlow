@@ -16,21 +16,6 @@ from tests.helpers import (
 
 @pytest.mark.xfail(
     strict=True,
-    reason="Duplicate tenant names currently surface as an unhandled DB error.",
-)
-def test_duplicate_tenant_name_returns_409():
-    create_tenant({"tenant_name": "Acme Capital"})
-
-    response = tenant_client_without_server_exceptions.post(
-        "/tenants",
-        json={"tenant_name": "Acme Capital"},
-    )
-
-    assert response.status_code == 409
-
-
-@pytest.mark.xfail(
-    strict=True,
     reason="Tenant name length is enforced only by the DB and is not mapped to 422.",
 )
 def test_overlong_tenant_name_returns_422():

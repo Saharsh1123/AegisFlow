@@ -1,6 +1,7 @@
 from app.db.session import SessionLocal
 from sqlalchemy import select, delete
 from app.db.models import Tenant
+from uuid import UUID
 
 def tenant_to_dict(db_tenant: Tenant):
     return {
@@ -27,7 +28,7 @@ def save_tenant(tenant: dict):
         db.close()
 
 
-def get_tenant(tenant_id: str):
+def get_tenant_by_id(tenant_id: UUID):
     db = SessionLocal()
 
     try:
@@ -38,6 +39,23 @@ def get_tenant(tenant_id: str):
         
         return tenant_to_dict(db_tenant)
     
+    finally:
+        db.close()
+
+
+def get_tenant_by_name(tenant_name: str):
+    db = SessionLocal()
+
+    try:
+        db_tenant = db.scalar(
+            select(Tenant).where(Tenant.tenant_name == tenant_name)
+        )
+
+        if db_tenant is None:
+            return None
+
+        return tenant_to_dict(db_tenant)
+
     finally:
         db.close()
 

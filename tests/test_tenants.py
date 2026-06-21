@@ -5,7 +5,7 @@ from uuid import UUID
 from app.schemas.tenants import TenantCreateRequest
 from app.services import tenant_service
 from tests.helpers import (
-    client, 
+    client,
     create_tenant,
     get_tenant,
     list_tenants,
@@ -109,6 +109,14 @@ def test_malformed_tenant_id_returns_422():
     response = get_tenant("not-a-uuid")
 
     assert response.status_code == 422
+
+
+def test_duplicate_tenant_name_returns_409():
+    create_tenant({"tenant_name": "Acme Capital"})
+    response = create_tenant({"tenant_name": "Acme Capital"})
+    
+
+    assert response.status_code == 409
 
 
 def test_list_tenants_returns_empty_list_when_none_exist():

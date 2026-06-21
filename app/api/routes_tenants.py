@@ -13,8 +13,8 @@ def create_tenant(payload: TenantCreateRequest):
 
 
 @tenant_router.get("/tenants/{tenant_id}", response_model=TenantResponse)
-def get_tenant(tenant_id: UUID):
-    retrieved_tenant = tenant_service.get_tenant(tenant_id)
+def get_tenant_by_id(tenant_id: UUID):
+    retrieved_tenant = tenant_service.get_tenant_by_id(tenant_id)
     if retrieved_tenant is None:
         raise HTTPException(status_code=404, detail="tenant not found")
     
