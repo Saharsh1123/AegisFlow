@@ -213,6 +213,22 @@ def test_unknown_valid_event_id_returns_404():
     assert response.json() == {"detail": "event not found"}
 
 
+def test_malformed_event_id_returns_422(monkeypatch):
+    """Malformed UUIDs should be rejected before the service layer is called."""
+
+    def fail_if_called(event_id):
+        raise AssertionError("event_service.get_event should not be called")
+
+    monkeypatch.setattr(
+        event_service,
+        "get_event",
+        fail_if_called,
+    )
+    response = get_event("not-a-uuid")
+
+    assert response.status_code == 422
+    
+
 def test_list_events_returns_empty_list_when_no_events_exist():
     response = list_events()
 

@@ -16,16 +16,6 @@ from tests.helpers import (
 
 @pytest.mark.xfail(
     strict=True,
-    reason="Event path IDs are untyped strings, so malformed UUIDs reach storage.",
-)
-def test_malformed_event_id_returns_422():
-    response = client_without_server_exceptions.get("/events/not-a-uuid")
-
-    assert response.status_code == 422
-
-
-@pytest.mark.xfail(
-    strict=True,
     reason="Duplicate tenant names currently surface as an unhandled DB error.",
 )
 def test_duplicate_tenant_name_returns_409():

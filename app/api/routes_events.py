@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.events import EventRequest, EventResponse
 from app.services import event_service
-
+from uuid import UUID
 
 router = APIRouter()
 
@@ -17,7 +17,7 @@ def get_all_events():
 
 
 @router.get("/events/{event_id}", response_model=EventResponse)
-def get_event(event_id: str):
+def get_event(event_id: UUID):
     retrieved_event = event_service.get_event(event_id)
     if retrieved_event is None:
         raise HTTPException(status_code=404, detail="event not found")

@@ -11,6 +11,7 @@ from app.api.routes_tenants import tenant_router
 from app.main import app
 from app.schemas.events import EventRequest
 from app.services import event_service
+from uuid import UUID
 
 
 client = TestClient(app)
@@ -55,7 +56,7 @@ def create_event_record(overrides: dict[str, Any] | None = None) -> dict[str, An
     return event_service.create_event(payload)
 
 
-def get_event(event_id: str):
+def get_event(event_id: UUID):
     """Retrieve an event through the public API."""
 
     return client.get(f"/events/{event_id}")
