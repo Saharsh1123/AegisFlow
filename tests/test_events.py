@@ -15,6 +15,7 @@ from tests.helpers import (
     list_events,
     make_valid_event_payload,
     post_event,
+    delete_events
 )
 
 
@@ -227,6 +228,14 @@ def test_malformed_event_id_returns_422(monkeypatch):
     response = get_event("not-a-uuid")
 
     assert response.status_code == 422
+
+
+def test_delete_all_events_endpoint_returns_204():
+    create_event_record()
+
+    response = delete_events()
+
+    assert response.status_code == 204
     
 
 def test_list_events_returns_empty_list_when_no_events_exist():

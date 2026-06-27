@@ -81,6 +81,10 @@ def make_valid_tenant_payload(
     return payload
 
 
+def delete_events():
+    return client.delete("/events/delete_all")
+
+
 def create_tenant(overrides: dict[str, Any] | None = None):
     """POST a tenant to the isolated tenant router application."""
 
@@ -100,3 +104,7 @@ def list_tenants():
     """List tenants through the isolated tenant router application."""
 
     return tenant_client.get("/tenants")
+
+
+def delete_tenants():
+    return tenant_client.delete("/tenants/delete_all")

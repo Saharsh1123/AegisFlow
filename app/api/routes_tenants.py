@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response, status
 from app.schemas.tenants import TenantCreateRequest, TenantResponse
 from app.services import tenant_service
 from uuid import UUID
@@ -12,6 +12,21 @@ def create_tenant(payload: TenantCreateRequest):
     return tenant_service.create_tenant(payload)
 
 
+@tenant_router.get("/tenants", response_model=list[TenantResponse])
+def get_all_tenants():
+    return tenant_service.get_all_tenants()
+
+
+@tenant_router.delete(
+    "/tenants/delete_all",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+)
+def delete_all_tenants() -> Response:
+    tenant_service.clear_tenants()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 @tenant_router.get("/tenants/{tenant_id}", response_model=TenantResponse)
 def get_tenant_by_id(tenant_id: UUID):
     retrieved_tenant = tenant_service.get_tenant_by_id(tenant_id)
@@ -19,14 +34,3 @@ def get_tenant_by_id(tenant_id: UUID):
         raise HTTPException(status_code=404, detail="tenant not found")
     
     return retrieved_tenant
-
-
-@tenant_router.get("/tenants", response_model=list[TenantResponse])
-def get_all_tenants():
-    return tenant_service.get_all_tenants()
-
-
-@tenant_router.delete("/tenants/delete_all", response_model=TenantResponse)
-def delete_all_tenants():
-    tenant_service.clear_tenants()
-

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response, status
 from app.schemas.events import EventRequest, EventResponse
 from app.services import event_service
 from uuid import UUID
@@ -25,6 +25,11 @@ def get_event(event_id: UUID):
     return retrieved_event
    
 
-@router.delete("/tenants/delete_all", response_model=EventResponse)
-def delete_all_tenants():
+@router.delete(
+    "/events/delete_all",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+)
+def delete_all_events() -> Response:
     event_service.clear_events()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

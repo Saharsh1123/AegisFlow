@@ -9,6 +9,7 @@ from tests.helpers import (
     create_tenant,
     get_tenant,
     list_tenants,
+    delete_tenants,
     tenant_client,
 )
 
@@ -81,7 +82,7 @@ def test_non_string_tenant_name_is_rejected():
     response = create_tenant({"tenant_name": 123})
 
     assert response.status_code == 422
-    
+
 
 def test_tenant_name_is_required():
     response = tenant_client.post("/tenants", json={})
@@ -122,6 +123,14 @@ def test_overlong_tenant_name_returns_422():
     response = create_tenant({"tenant_name": "T" * 101})
 
     assert response.status_code == 422
+
+
+def test_delete_all_tenants_endpoint_returns_204():
+    create_tenant()
+
+    response = delete_tenants()
+
+    assert response.status_code == 204
 
 
 def test_list_tenants_returns_empty_list_when_none_exist():
