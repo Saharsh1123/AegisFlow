@@ -77,11 +77,11 @@ def test_whitespace_only_tenant_name_is_rejected():
     assert response.status_code == 422
 
 
-
 def test_non_string_tenant_name_is_rejected():
     response = create_tenant({"tenant_name": 123})
 
     assert response.status_code == 422
+    
 
 def test_tenant_name_is_required():
     response = tenant_client.post("/tenants", json={})
@@ -114,9 +114,14 @@ def test_malformed_tenant_id_returns_422():
 def test_duplicate_tenant_name_returns_409():
     create_tenant({"tenant_name": "Acme Capital"})
     response = create_tenant({"tenant_name": "Acme Capital"})
-    
 
     assert response.status_code == 409
+
+
+def test_overlong_tenant_name_returns_422():
+    response = create_tenant({"tenant_name": "T" * 101})
+
+    assert response.status_code == 422
 
 
 def test_list_tenants_returns_empty_list_when_none_exist():
@@ -146,3 +151,6 @@ def test_clear_tenants_service_removes_all_records():
     tenant_service.clear_tenants()
 
     assert list_tenants().json() == []
+
+
+

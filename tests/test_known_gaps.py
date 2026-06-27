@@ -16,19 +16,6 @@ from tests.helpers import (
 
 @pytest.mark.xfail(
     strict=True,
-    reason="Tenant name length is enforced only by the DB and is not mapped to 422.",
-)
-def test_overlong_tenant_name_returns_422():
-    response = tenant_client_without_server_exceptions.post(
-        "/tenants",
-        json={"tenant_name": "T" * 101},
-    )
-
-    assert response.status_code == 422
-
-
-@pytest.mark.xfail(
-    strict=True,
     reason=(
         "The tenant delete-all route is shadowed by /tenants/{tenant_id} and "
         "declares a response body it does not return."
