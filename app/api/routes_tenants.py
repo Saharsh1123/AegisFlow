@@ -27,6 +27,14 @@ def delete_all_tenants() -> Response:
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
+@tenant_router.delete("/tenants/delete/{tenant_id}", status_code=204,)
+def delete_tenant(tenant_id: UUID):
+    deleted = tenant_service.clear_one_tenant(tenant_id)
+
+    if not deleted:
+        raise HTTPException(status_code=404, detail="tenant not found")
+
+
 @tenant_router.get("/tenants/{tenant_id}", response_model=TenantResponse)
 def get_tenant_by_id(tenant_id: UUID):
     retrieved_tenant = tenant_service.get_tenant_by_id(tenant_id)

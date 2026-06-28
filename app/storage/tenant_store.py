@@ -75,6 +75,28 @@ def get_all_tenants():
         db.close()
 
 
+def clear_one_tenant(tenant_id: UUID):
+    db = SessionLocal()
+
+    try:
+        db_tenant = db.get(Tenant, tenant_id)
+
+        if db_tenant is None:
+            return False
+
+        db.delete(db_tenant)
+        db.commit()
+
+        return True
+
+    except Exception:
+        db.rollback()
+        raise
+
+    finally:
+        db.close()
+
+
 def clear_tenants():
     db = SessionLocal()
 

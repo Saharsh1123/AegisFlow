@@ -108,3 +108,7 @@ def list_tenants():
 
 def delete_tenants():
     return tenant_client.delete("/tenants/delete_all")
+
+
+def delete_one_tenant(tenant_id: UUID):
+    return tenant_client.delete(f"/tenants/delete/{tenant_id}")

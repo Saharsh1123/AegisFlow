@@ -22,11 +22,18 @@ def create_tenant(payload: TenantCreateRequest):
 
     return tenant_store.save_tenant(tenant)
 
+
 def get_tenant_by_id(tenant_id: UUID):
     return tenant_store.get_tenant_by_id(tenant_id)
 
+
 def get_all_tenants():
     return tenant_store.get_all_tenants()
+
+
+def clear_one_tenant(tenant_id: UUID):
+    return tenant_store.clear_one_tenant(tenant_id)
+    
 
 def clear_tenants():
     tenant_store.clear_tenants()
