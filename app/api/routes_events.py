@@ -16,6 +16,24 @@ def get_all_events():
     return event_service.get_all_events()
 
 
+@router.delete(
+    "/events/delete_all",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+)
+def delete_all_events() -> Response:
+    event_service.clear_events()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.delete("/events/delete/{event_id}", status_code=204,)
+def delete_event(event_id: UUID):
+    deleted = event_service.clear_one_event(event_id)
+
+    if not deleted:
+        raise HTTPException(status_code=404, detail="event not found")
+
+
 @router.get("/events/{event_id}", response_model=EventResponse)
 def get_event(event_id: UUID):
     retrieved_event = event_service.get_event(event_id)
@@ -25,11 +43,3 @@ def get_event(event_id: UUID):
     return retrieved_event
    
 
-@router.delete(
-    "/events/delete_all",
-    status_code=status.HTTP_204_NO_CONTENT,
-    response_class=Response,
-)
-def delete_all_events() -> Response:
-    event_service.clear_events()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)

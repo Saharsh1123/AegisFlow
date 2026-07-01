@@ -68,6 +68,14 @@ def list_events():
     return client.get("/events")
 
 
+def delete_events():
+    return client.delete("/events/delete_all")
+
+
+def delete_one_event(event_id: UUID):
+    return client.delete(f"/events/delete/{event_id}")
+
+
 def make_valid_tenant_payload(
     overrides: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -79,10 +87,6 @@ def make_valid_tenant_payload(
         payload.update(overrides)
 
     return payload
-
-
-def delete_events():
-    return client.delete("/events/delete_all")
 
 
 def create_tenant(overrides: dict[str, Any] | None = None):

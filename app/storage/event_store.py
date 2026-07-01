@@ -1,6 +1,8 @@
 from app.db.session import SessionLocal
 from sqlalchemy import select, delete
 from app.db.models import Event
+from uuid import UUID
+
 
 def event_to_dict(db_event: Event) -> dict:
     return {
@@ -17,6 +19,7 @@ def event_to_dict(db_event: Event) -> dict:
         "price": float(db_event.price),
     }
 
+
 def save_event(event: dict):
     db = SessionLocal()
 
@@ -32,6 +35,7 @@ def save_event(event: dict):
     finally:
         db.close()
 
+
 def get_event(event_id: str):
     db = SessionLocal()
 
@@ -46,6 +50,7 @@ def get_event(event_id: str):
     finally:
         db.close()
 
+
 def get_all_events():
     db = SessionLocal()
 
@@ -59,6 +64,29 @@ def get_all_events():
 
     finally:
         db.close()
+
+
+def clear_one_event(event_id: UUID):
+    db = SessionLocal()
+
+    try:
+        db_event = db.get(Event, event_id)
+
+        if db_event is None:
+            return False
+
+        db.delete(db_event)
+        db.commit()
+
+        return True
+
+    except Exception:
+        db.rollback()
+        raise
+
+    finally:
+        db.close()
+
 
 def clear_events():
     db = SessionLocal()

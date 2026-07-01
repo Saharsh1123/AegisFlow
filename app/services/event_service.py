@@ -2,7 +2,7 @@ from app.schemas.events import EventRequest
 from app.storage import event_store
 from app.services import risk_service
 from datetime import datetime, timezone
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 
 def create_event(payload: EventRequest):
@@ -40,6 +40,9 @@ def get_event(event_id: str):
 
 def get_all_events():
     return event_store.get_all_events()
+
+def clear_one_event(event_id: UUID):
+    return event_store.clear_one_event(event_id)
 
 def clear_events():
     event_store.clear_events()
