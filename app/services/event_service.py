@@ -17,18 +17,18 @@ def create_event(payload: EventRequest):
         status = "accepted"
 
     created_event = {
-            "event_id": new_id, 
-            "status": status,
-            "risk_approved": approved,
-            "risk_reason": reason,
-            "order_value": order_value,
-            "created_at": datetime.now(timezone.utc),
-            "asset": payload.asset,
-            "event_type": payload.event_type,
-            "side": payload.side,
-            "quantity": quantity,
-            "price": price
-           }
+        "event_id": new_id,
+        "status": status,
+        "risk_approved": approved,
+        "risk_reason": reason,
+        "order_value": order_value,
+        "created_at": datetime.now(timezone.utc),
+        "asset": payload.asset,
+        "event_type": payload.event_type,
+        "side": payload.side,
+        "quantity": quantity,
+        "price": price,
+    }
 
     event_store.save_event(created_event)
 
@@ -38,11 +38,14 @@ def create_event(payload: EventRequest):
 def get_event(event_id: str):
     return event_store.get_event(event_id)
 
+
 def get_all_events():
     return event_store.get_all_events()
 
+
 def clear_one_event(event_id: UUID):
     return event_store.clear_one_event(event_id)
+
 
 def clear_events():
     event_store.clear_events()

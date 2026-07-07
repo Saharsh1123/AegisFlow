@@ -17,7 +17,7 @@ def create_tenant(payload: TenantCreateRequest):
         "tenant_id": new_id,
         "tenant_name": payload.tenant_name,
         "active": True,
-        "created_at": datetime.now(timezone.utc)
+        "created_at": datetime.now(timezone.utc),
     }
 
     return tenant_store.save_tenant(tenant)
@@ -33,8 +33,7 @@ def get_all_tenants():
 
 def clear_one_tenant(tenant_id: UUID):
     return tenant_store.clear_one_tenant(tenant_id)
-    
+
 
 def clear_tenants():
     tenant_store.clear_tenants()
-

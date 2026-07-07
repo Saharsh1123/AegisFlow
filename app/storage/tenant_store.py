@@ -3,6 +3,7 @@ from sqlalchemy import select, delete
 from app.db.models import Tenant
 from uuid import UUID
 
+
 def tenant_to_dict(db_tenant: Tenant):
     return {
         "tenant_id": db_tenant.tenant_id,
@@ -23,7 +24,7 @@ def save_tenant(tenant: dict):
         db.refresh(db_tenant)
 
         return tenant_to_dict(db_tenant)
-    
+
     finally:
         db.close()
 
@@ -36,9 +37,9 @@ def get_tenant_by_id(tenant_id: UUID):
 
         if db_tenant is None:
             return None
-        
+
         return tenant_to_dict(db_tenant)
-    
+
     finally:
         db.close()
 
@@ -47,9 +48,7 @@ def get_tenant_by_name(tenant_name: str):
     db = SessionLocal()
 
     try:
-        db_tenant = db.scalar(
-            select(Tenant).where(Tenant.tenant_name == tenant_name)
-        )
+        db_tenant = db.scalar(select(Tenant).where(Tenant.tenant_name == tenant_name))
 
         if db_tenant is None:
             return None
@@ -68,7 +67,7 @@ def get_all_tenants():
 
         if db_tenants is None:
             return None
-        
+
         return [tenant_to_dict(tenant) for tenant in db_tenants]
 
     finally:

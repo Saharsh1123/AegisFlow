@@ -19,7 +19,6 @@ from tests.helpers import (
     post_event,
 )
 
-
 EXPECTED_EVENT_KEYS = {
     "event_id",
     "status",
@@ -187,9 +186,7 @@ def test_order_equal_to_risk_limit_is_accepted():
 
 
 def test_order_over_risk_limit_is_rejected_and_persisted():
-    created = create_event_record(
-        {"quantity": 11, "price": 5000.0}
-    )
+    created = create_event_record({"quantity": 11, "price": 5000.0})
 
     response = get_event(str(created["event_id"]))
     retrieved = response.json()
@@ -220,16 +217,12 @@ def test_created_event_can_be_retrieved_with_business_data_intact():
     assert retrieved["side"] == created["side"]
     assert retrieved["quantity"] == created["quantity"]
     assert retrieved["price"] == pytest.approx(created["price"])
-    assert retrieved["order_value"] == pytest.approx(
-        created["order_value"]
-    )
+    assert retrieved["order_value"] == pytest.approx(created["order_value"])
     assert isinstance(created_at, datetime)
 
 
 def test_get_unknown_valid_event_id_returns_404():
-    response = get_event(
-        "00000000-0000-0000-0000-000000000000"
-    )
+    response = get_event("00000000-0000-0000-0000-000000000000")
 
     assert response.status_code == 404
     assert response.json() == {"detail": "event not found"}
@@ -239,9 +232,7 @@ def test_get_malformed_event_id_returns_422_before_service(monkeypatch):
     """Malformed UUIDs should be rejected before event lookup runs."""
 
     def fail_if_called(*args, **kwargs):
-        raise AssertionError(
-            "event_service.get_event should not be called"
-        )
+        raise AssertionError("event_service.get_event should not be called")
 
     monkeypatch.setattr(
         event_service,
@@ -255,9 +246,7 @@ def test_get_malformed_event_id_returns_422_before_service(monkeypatch):
 
 
 def test_delete_unknown_valid_event_id_returns_404():
-    response = delete_one_event(
-        "00000000-0000-0000-0000-000000000000"
-    )
+    response = delete_one_event("00000000-0000-0000-0000-000000000000")
 
     assert response.status_code == 404
     assert response.json() == {"detail": "event not found"}
@@ -315,9 +304,7 @@ def test_delete_one_event_removes_only_target():
     assert response.content == b""
 
     assert deleted_response.status_code == 404
-    assert deleted_response.json() == {
-        "detail": "event not found"
-    }
+    assert deleted_response.json() == {"detail": "event not found"}
 
     assert survivor_response.status_code == 200
     assert survivor_data["event_id"] == str(survivor["event_id"])
@@ -325,9 +312,7 @@ def test_delete_one_event_removes_only_target():
     assert survivor_data["event_type"] == survivor["event_type"]
     assert survivor_data["side"] == survivor["side"]
     assert survivor_data["quantity"] == survivor["quantity"]
-    assert survivor_data["price"] == pytest.approx(
-        survivor["price"]
-    )
+    assert survivor_data["price"] == pytest.approx(survivor["price"])
     assert survivor_data["status"] == survivor["status"]
 
 
@@ -347,5 +332,3 @@ def test_delete_all_events_removes_every_record_and_is_idempotent():
 
     assert repeated_response.status_code == 204
     assert repeated_response.content == b""
-
-

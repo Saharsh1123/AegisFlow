@@ -74,9 +74,7 @@ def test_event_check_constraints_reject_invalid_rows(db_session, overrides):
 
 
 @pytest.mark.parametrize("invalid_name", ["", "T" * 101], ids=["empty", "overlong"])
-def test_tenant_name_length_constraint_rejects_invalid_name(
-    db_session, invalid_name
-):
+def test_tenant_name_length_constraint_rejects_invalid_name(db_session, invalid_name):
     db_session.add(make_tenant_model(tenant_name=invalid_name))
 
     with pytest.raises(IntegrityError):

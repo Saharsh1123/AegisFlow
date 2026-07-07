@@ -23,7 +23,6 @@ os.environ["DATABASE_URL"] = "sqlite+pysqlite:///:memory:"
 from app.db.models import Base, Event, Tenant  # noqa: E402
 from app.storage import event_store, tenant_store  # noqa: E402
 
-
 TEST_ENGINE = create_engine(
     "sqlite+pysqlite:///:memory:",
     connect_args={"check_same_thread": False},
@@ -37,7 +36,9 @@ TestingSessionLocal = sessionmaker(
 
 
 @event.listens_for(TEST_ENGINE, "connect")
-def register_sqlite_compatibility_functions(dbapi_connection, _connection_record) -> None:
+def register_sqlite_compatibility_functions(
+    dbapi_connection, _connection_record
+) -> None:
     """Provide the PostgreSQL ``char_length`` function used by check constraints."""
 
     dbapi_connection.create_function("char_length", 1, len)

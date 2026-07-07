@@ -44,9 +44,9 @@ def get_event(event_id: str):
 
         if db_event is None:
             return None
-        
+
         return event_to_dict(db_event)
-    
+
     finally:
         db.close()
 
@@ -59,7 +59,7 @@ def get_all_events():
 
         if db_events is None:
             return None
-        
+
         return [event_to_dict(event) for event in db_events]
 
     finally:

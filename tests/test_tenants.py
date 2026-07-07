@@ -14,7 +14,6 @@ from tests.helpers import (
     list_tenants,
 )
 
-
 EXPECTED_TENANT_KEYS = {
     "tenant_id",
     "tenant_name",
@@ -55,9 +54,7 @@ def test_tenant_service_generates_server_owned_fields(monkeypatch):
         capture_tenant,
     )
 
-    tenant_service.create_tenant(
-        TenantCreateRequest(tenant_name="Acme Capital")
-    )
+    tenant_service.create_tenant(TenantCreateRequest(tenant_name="Acme Capital"))
 
     assert isinstance(captured["tenant_id"], UUID)
     assert captured["active"] is True
@@ -104,20 +101,14 @@ def test_tenant_name_length_boundary_is_enforced():
 def test_duplicate_normalized_tenant_name_returns_409():
     create_tenant({"tenant_name": "Acme Capital"})
 
-    response = create_tenant(
-        {"tenant_name": "   Acme Capital   "}
-    )
+    response = create_tenant({"tenant_name": "   Acme Capital   "})
 
     assert response.status_code == 409
-    assert response.json() == {
-        "detail": "tenant name already exists"
-    }
+    assert response.json() == {"detail": "tenant name already exists"}
 
 
 def test_created_tenant_can_be_retrieved_without_data_loss():
-    created = create_tenant(
-        {"tenant_name": "Retrievable Tenant"}
-    ).json()
+    created = create_tenant({"tenant_name": "Retrievable Tenant"}).json()
 
     response = get_tenant(created["tenant_id"])
 
@@ -126,18 +117,14 @@ def test_created_tenant_can_be_retrieved_without_data_loss():
 
 
 def test_get_unknown_valid_tenant_id_returns_404():
-    response = get_tenant(
-        "00000000-0000-0000-0000-000000000000"
-    )
+    response = get_tenant("00000000-0000-0000-0000-000000000000")
 
     assert response.status_code == 404
     assert response.json() == {"detail": "tenant not found"}
 
 
 def test_delete_unknown_valid_tenant_id_returns_404():
-    response = delete_one_tenant(
-        "00000000-0000-0000-0000-000000000000"
-    )
+    response = delete_one_tenant("00000000-0000-0000-0000-000000000000")
 
     assert response.status_code == 404
     assert response.json() == {"detail": "tenant not found"}
@@ -163,12 +150,8 @@ def test_list_tenants_returns_empty_list_when_none_exist():
 
 
 def test_list_tenants_returns_every_created_tenant():
-    first = create_tenant(
-        {"tenant_name": "Tenant One"}
-    ).json()
-    second = create_tenant(
-        {"tenant_name": "Tenant Two"}
-    ).json()
+    first = create_tenant({"tenant_name": "Tenant One"}).json()
+    second = create_tenant({"tenant_name": "Tenant Two"}).json()
 
     response = list_tenants()
     data = response.json()
@@ -180,12 +163,8 @@ def test_list_tenants_returns_every_created_tenant():
 
 
 def test_delete_one_tenant_removes_only_target():
-    target = create_tenant(
-        {"tenant_name": "Target Tenant"}
-    ).json()
-    survivor = create_tenant(
-        {"tenant_name": "Survivor Tenant"}
-    ).json()
+    target = create_tenant({"tenant_name": "Target Tenant"}).json()
+    survivor = create_tenant({"tenant_name": "Survivor Tenant"}).json()
 
     response = delete_one_tenant(target["tenant_id"])
     deleted_response = get_tenant(target["tenant_id"])
@@ -195,9 +174,7 @@ def test_delete_one_tenant_removes_only_target():
     assert response.content == b""
 
     assert deleted_response.status_code == 404
-    assert deleted_response.json() == {
-        "detail": "tenant not found"
-    }
+    assert deleted_response.json() == {"detail": "tenant not found"}
 
     assert survivor_response.status_code == 200
     assert survivor_response.json() == survivor
@@ -219,12 +196,3 @@ def test_delete_all_tenants_removes_every_record_and_is_idempotent():
 
     assert repeated_response.status_code == 204
     assert repeated_response.content == b""
-
-
-
-
-
-
-
-
-

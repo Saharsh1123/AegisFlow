@@ -13,7 +13,6 @@ from app.schemas.events import EventRequest
 from app.services import event_service
 from uuid import UUID
 
-
 client = TestClient(app)
 client_without_server_exceptions = TestClient(app, raise_server_exceptions=False)
 

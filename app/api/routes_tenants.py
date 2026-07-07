@@ -3,7 +3,6 @@ from app.schemas.tenants import TenantCreateRequest, TenantResponse
 from app.services import tenant_service
 from uuid import UUID
 
-
 tenant_router = APIRouter()
 
 
@@ -27,7 +26,10 @@ def delete_all_tenants() -> Response:
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@tenant_router.delete("/tenants/delete/{tenant_id}", status_code=204,)
+@tenant_router.delete(
+    "/tenants/delete/{tenant_id}",
+    status_code=204,
+)
 def delete_tenant(tenant_id: UUID):
     deleted = tenant_service.clear_one_tenant(tenant_id)
 
@@ -40,5 +42,5 @@ def get_tenant_by_id(tenant_id: UUID):
     retrieved_tenant = tenant_service.get_tenant_by_id(tenant_id)
     if retrieved_tenant is None:
         raise HTTPException(status_code=404, detail="tenant not found")
-    
+
     return retrieved_tenant
