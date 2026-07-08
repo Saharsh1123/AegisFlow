@@ -73,7 +73,8 @@ class Tenant(Base):
     )
 
     tenant_id: Mapped[UUID] = mapped_column(
-        primary_key=True, nullable=False, unique=True
+        primary_key=True,
+        nullable=False,
     )
     tenant_name: Mapped[str] = mapped_column(nullable=False, unique=True)
     active: Mapped[bool] = mapped_column(nullable=False, default=True)
@@ -88,7 +89,7 @@ class APIKey(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "char_length(name) BETWEEN 1 AND 100",
+            "char_length(api_key_name) BETWEEN 1 AND 100",
             name="ck_api_keys_name_length_valid",
         ),
         CheckConstraint(
@@ -115,7 +116,7 @@ class APIKey(Base):
         nullable=False,
         index=True,
     )
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    api_key_name: Mapped[str] = mapped_column(String(100), nullable=False)
     secret_digest: Mapped[str] = mapped_column(
         String(64),
         nullable=False,

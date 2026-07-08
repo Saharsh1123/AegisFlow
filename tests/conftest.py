@@ -20,7 +20,7 @@ from sqlalchemy.pool import StaticPool
 # and the production engine is not used by the test suite.
 os.environ["DATABASE_URL"] = "sqlite+pysqlite:///:memory:"
 
-from app.db.models import Base, Event, Tenant  # noqa: E402
+from app.db.models import APIKey, Base, Event, Tenant  # noqa: E402
 from app.storage import event_store, tenant_store  # noqa: E402
 
 TEST_ENGINE = create_engine(
@@ -42,6 +42,7 @@ def register_sqlite_compatibility_functions(
     """Provide the PostgreSQL ``char_length`` function used by check constraints."""
 
     dbapi_connection.create_function("char_length", 1, len)
+    dbapi_connection.execute("PRAGMA foreign_keys=ON")
 
 
 # Storage modules import SessionLocal directly, so replace those references with
@@ -107,6 +108,7 @@ def _delete_all_rows() -> None:
     """Delete rows in dependency-safe order without invoking application code."""
 
     with TestingSessionLocal() as db:
+        db.execute(delete(APIKey))
         db.execute(delete(Event))
         db.execute(delete(Tenant))
         db.commit()
