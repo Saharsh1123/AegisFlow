@@ -32,6 +32,10 @@ def save_event(event: dict):
 
         return event_to_dict(db_event)
 
+    except Exception:
+        db.rollback()
+        raise
+
     finally:
         db.close()
 
@@ -94,6 +98,10 @@ def clear_events():
     try:
         db.execute(delete(Event))
         db.commit()
+
+    except Exception:
+        db.rollback()
+        raise
 
     finally:
         db.close()

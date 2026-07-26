@@ -25,6 +25,10 @@ def save_tenant(tenant: dict):
 
         return tenant_to_dict(db_tenant)
 
+    except Exception:
+        db.rollback()
+        raise
+
     finally:
         db.close()
 
@@ -102,6 +106,10 @@ def clear_tenants():
     try:
         db.execute(delete(Tenant))
         db.commit()
+
+    except Exception:
+        db.rollback()
+        raise
 
     finally:
         db.close()
