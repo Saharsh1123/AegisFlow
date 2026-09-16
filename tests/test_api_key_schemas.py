@@ -30,7 +30,8 @@ def make_api_key_metadata(**overrides):
 
 
 def test_api_key_create_request_strips_surrounding_whitespace():
-    request = APIKeyCreateRequest(api_key_name="  production-ingestion  ")
+    id = uuid4()
+    request = APIKeyCreateRequest(api_key_name="  production-ingestion  ", tenant_id=id)
 
     assert request.api_key_name == "production-ingestion"
 
@@ -46,7 +47,8 @@ def test_api_key_create_request_rejects_blank_names(api_key_name):
 
 
 def test_api_key_create_request_accepts_100_character_name():
-    request = APIKeyCreateRequest(api_key_name="A" * 100)
+    id = uuid4()
+    request = APIKeyCreateRequest(api_key_name="A" * 100, tenant_id=id)
 
     assert request.api_key_name == "A" * 100
 

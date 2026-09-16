@@ -24,6 +24,8 @@ class APIKeyCreateRequest(BaseModel):
 
         return cleaned
 
+    tenant_id: UUID
+
 
 class APIKeyMetadataResponse(BaseModel):
     api_key_id: UUID
